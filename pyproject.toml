@@ -1,0 +1,58 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "litenetlib-python"
+version = "0.9.5.2"
+description = "Lite reliable UDP networking library for Python (C# LiteNetLib v0.9.5.2 compatible)"
+readme = "README.md"
+requires-python = ">=3.7"
+license = {text = "MIT"}
+authors = [
+    {name = "xiaoyanghuo"}
+]
+keywords = ["networking", "udp", "reliable", "protocol", "litenetlib", "game", "networking"]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: System :: Networking",
+]
+
+[project.urls]
+Homepage = "https://github.com/xiaoyanghuo/LiteNetLib-Python-0.9.5.2"
+Documentation = "https://github.com/xiaoyanghuo/LiteNetLib-Python-0.9.5.2/blob/main/README.md"
+Repository = "https://github.com/xiaoyanghuo/LiteNetLib-Python-0.9.5.2"
+"Bug Tracker" = "https://github.com/xiaoyanghuo/LiteNetLib-Python-0.9.5.2/issues"
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "pytest-asyncio>=0.20.0",
+]
+
+[tool.setuptools]
+packages = ["litenetlib", "litenetlib.core", "litenetlib.channels", "litenetlib.utils"]
+
+[tool.setuptools.package-data]
+"litenetlib" = ["*.pyi"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_functions = ["test_*"]
+python_classes = ["Test*"]
+addopts = "-m \"not integration\""
+markers = [
+    "integration: Integration tests that require network sockets"
+]

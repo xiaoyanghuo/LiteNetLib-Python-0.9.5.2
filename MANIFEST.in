@@ -1,0 +1,16 @@
+include README.md
+include LICENSE
+include requirements.txt
+include pytest.ini
+
+recursive-include litenetlib *.py
+
+recursive-include examples *.py
+recursive-include interop_tests *.py *.md *.cs *.csproj
+
+global-exclude __pycache__
+global-exclude *.pyc
+global-exclude *.pyo
+global-exclude .git*
+global-exclude .idea*
+global-exclude *.so
