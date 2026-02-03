@@ -66,7 +66,7 @@ python -m build
 python -m twine upload --repository testpypi dist/*
 
 # 安装测试
-pip install --index-url https://test.pypi.org/simple/ litenetlib-python
+pip install --index-url https://test.pypi.org/simple/ litenetlib-0952
 ```
 
 ### 6. 发布到正式 PyPI
@@ -85,10 +85,10 @@ python -m twine upload dist/*
 
 ```bash
 # 清理旧的安装
-pip uninstall litenetlib-python -y
+pip uninstall litenetlib-0952 -y
 
 # 从 PyPI 安装
-pip install litenetlib-python
+pip install litenetlib-0952
 
 # 验证
 python -c "from litenetlib.core.constants import NetConstants; print(f'PROTOCOL_ID={NetConstants.PROTOCOL_ID}')"
@@ -111,7 +111,7 @@ python -c "from litenetlib.core.constants import NetConstants; print(f'PROTOCOL_
 
 ### 包名
 
-- [x] PyPI 包名: `litenetlib-python`
+- [x] PyPI 包名: `litenetlib-0952`
 - [x] 导入名称: `litenetlib`
 
 ### 分类
@@ -134,7 +134,7 @@ python -c "from litenetlib.core.constants import NetConstants; print(f'PROTOCOL_
 
 | 项目 | 值 |
 |------|-----|
-| **包名** | litenetlib-python |
+| **包名** | litenetlib-0952 |
 | **版本** | 0.9.5.2 |
 | **描述** | Lite reliable UDP networking library for Python (C# LiteNetLib v0.9.5.2 compatible) |
 | **作者** | xiaoyanghuo |
@@ -146,7 +146,7 @@ python -c "from litenetlib.core.constants import NetConstants; print(f'PROTOCOL_
 ## 🔗 相关链接
 
 - **GitHub**: https://github.com/xiaoyanghuo/LiteNetLib-Python-0.9.5.2
-- **PyPI**: https://pypi.org/project/litenetlib-python/
+- **PyPI**: https://pypi.org/project/litenetlib-0952/
 - **问题追踪**: https://github.com/xiaoyanghuo/LiteNetLib-Python-0.9.5.2/issues
 
 ## 📝 版本发布说明

@@ -56,25 +56,32 @@ class NetPacket:
             size: Data size (only when creating with property)
                  数据大小（仅在用属性创建时）
         """
-        # Check PacketProperty first because IntEnum is also an int
-        # 首先检查 PacketProperty，因为 IntEnum 也是 int 类型
-        if isinstance(size_or_property, PacketProperty):
-            # Create with property / 使用属性创建
-            prop = size_or_property
-            data_size = property_or_size if property_or_size is not None else 0
-            header_size = NetPacket._header_sizes[prop]
-            self._data = bytearray(header_size + data_size)
-            self._size = len(self._data)
-            self._user_data = None
-            # Set packet property in the first byte / 在第一个字节中设置数据包属性
-            self._data[0] = prop & 0x1F
-        elif isinstance(size_or_property, int):
-            # Create with size / 使用大小创建
-            self._data = bytearray(size_or_property)
-            self._size = size_or_property
-            self._user_data = None
-        else:
-            raise TypeError("Invalid argument type")
+        # Check if it's a PacketProperty (IntEnum values are int, need special check)
+        # 检查是否为 PacketProperty（IntEnum 值是 int，需要特殊检查）
+        try:
+            # Try to convert to PacketProperty - if successful and second arg is int, it's a property
+            # 尝试转换为 PacketProperty - 如果成功且第二个参数是 int，则是属性
+            prop = PacketProperty(size_or_property)
+            # If second arg is an int (data size), treat first arg as property
+            # 如果第二个参数是 int（数据大小），则将第一个参数视为属性
+            if property_or_size is None or isinstance(property_or_size, int):
+                data_size = property_or_size if property_or_size is not None else 0
+                header_size = NetPacket._header_sizes[prop]
+                self._data = bytearray(header_size + data_size)
+                self._size = len(self._data)
+                self._user_data = None
+                # Set packet property in the first byte / 在第一个字节中设置数据包属性
+                self._data[0] = prop & 0x1F
+                return
+        except (ValueError, KeyError):
+            # Not a valid PacketProperty, treat as size
+            # 不是有效的 PacketProperty，视为大小
+            pass
+
+        # Create with size / 使用大小创建
+        self._data = bytearray(size_or_property)
+        self._size = size_or_property
+        self._user_data = None
 
     @classmethod
     def from_bytes(cls, data: bytes) -> 'NetPacket':

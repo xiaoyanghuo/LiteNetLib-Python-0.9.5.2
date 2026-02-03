@@ -1,0 +1,18 @@
+@echo off
+REM PyPI Upload Script for litenetlib-0952
+REM
+REM Usage:
+REM 1. Create PyPI API Token: https://pypi.org/manage/account/token/
+REM 2. Replace <YOUR_PYPITOKEN_HERE> with your token (pypi-...)
+REM 3. Run: upload_pypi.bat
+
+cd /d D:\work\projects\Survivalcraft\netproject\LiteNetLib-Python-0.9.5.2
+
+echo Setting PyPI credentials...
+set TWINE_USERNAME=__token__
+set TWINE_PASSWORD=<YOUR_PYPITOKEN_HERE>
+
+echo Uploading to PyPI...
+python -m twine upload --disable-progress-bar dist/litenetlib_0952-*
+
+echo Done!

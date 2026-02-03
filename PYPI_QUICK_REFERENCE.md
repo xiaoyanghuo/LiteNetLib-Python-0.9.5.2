@@ -19,7 +19,7 @@ python -c "from litenetlib.core.constants import NetConstants; print('PROTOCOL_I
 # 输出: PROTOCOL_ID: 11 ✅
 
 # 卸载
-pip uninstall litenetlib-python -y
+pip uninstall litenetlib-0952 -y
 ```
 
 ## 🚀 发布到 PyPI（一键命令）
@@ -50,9 +50,9 @@ python -m build && python -m twine upload dist/*
 
 | 项目 | 内容 |
 |------|------|
-| 包名 | litenetlib-python |
+| 包名 | litenetlib-0952 |
 | 版本 | 0.9.5.2 |
-| PyPI URL | https://pypi.org/project/litenetlib-python/ |
+| PyPI URL | https://pypi.org/project/litenetlib-0952/ |
 | 仓库 | https://github.com/xiaoyanghuo/LiteNetLib-Python-0.9.5.2 |
 
 ## ⚠️ 重要提示

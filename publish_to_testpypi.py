@@ -50,7 +50,7 @@ def upload_to_testpypi():
         return False
 
     print("\n✅ 发布成功！")
-    print("📦 TestPyPI URL: https://test.pypi.org/project/litenetlib-python/\n")
+    print("📦 TestPyPI URL: https://test.pypi.org/project/litenetlib-0952/\n")
     return True
 
 
@@ -60,7 +60,7 @@ def install_from_testpypi():
 
     # 先卸载旧版本
     subprocess.run(
-        [sys.executable, "-m", "pip", "uninstall", "litenetlib-python", "-y"],
+        [sys.executable, "-m", "pip", "uninstall", "litenetlib-0952", "-y"],
         capture_output=True
     )
 
@@ -69,7 +69,7 @@ def install_from_testpypi():
         [
             sys.executable, "-m", "pip", "install",
             "--index-url", "https://test.pypi.org/simple/",
-            "litenetlib-python"
+            "litenetlib-0952"
         ],
         capture_output=True,
         text=True
@@ -109,7 +109,7 @@ def install_from_testpypi():
 def show_package_info():
     """显示包信息"""
     result = subprocess.run(
-        [sys.executable, "-m", "pip", "show", "litenetlib-python"],
+        [sys.executable, "-m", "pip", "show", "litenetlib-0952"],
         capture_output=True,
         text=True
     )
@@ -169,9 +169,9 @@ export TWINE_PASSWORD="pypi-xxxxxxxxxxxxx"
     print("✅ TestPyPI 发布和安装测试完成！\n")
 
     print("后续步骤:")
-    print("1. 访问 TestPyPI 查看包: https://test.pypi.org/project/litenetlib-python/")
+    print("1. 访问 TestPyPI 查看包: https://test.pypi.org/project/litenetlib-0952/")
     print("2. 如果一切正常，可以发布到正式 PyPI")
-    print("3. 清理: pip uninstall litenetlib-python -y")
+    print("3. 清理: pip uninstall litenetlib-0952 -y")
 
     input("\n按 Enter 退出...")
     return 0

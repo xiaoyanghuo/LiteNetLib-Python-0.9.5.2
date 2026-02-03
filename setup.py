@@ -23,8 +23,8 @@ def read_requirements():
     return []
 
 setup(
-    name='litenetlib-python',
-    version='0.9.5.2',
+    name='litenetlib-0952',
+    version='1.0.0',
     description='Lite reliable UDP networking library for Python (C# LiteNetLib v0.9.5.2 compatible)',
     long_description=read_readme(),
     long_description_content_type='text/markdown',

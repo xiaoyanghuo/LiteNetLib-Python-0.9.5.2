@@ -1,0 +1,19 @@
+@echo off
+REM TestPyPI Upload Script for litenetlib-0952
+REM
+REM Usage:
+REM 1. Create TestPyPI API Token: https://test.pypi.org/manage/account/token/
+REM 2. Replace <YOUR_TESTPYPI_TOKEN_HERE> with your token (pypi-...)
+REM 3. Run: upload_testpypi.bat
+
+cd /d D:\work\projects\Survivalcraft\netproject\LiteNetLib-Python-0.9.5.2
+
+echo Setting TestPyPI credentials...
+set TWINE_USERNAME=__token__
+set TWINE_PASSWORD=<YOUR_TESTPYPI_TOKEN_HERE>
+
+echo Uploading to TestPyPI...
+python -m twine upload --repository testpypi --disable-progress-bar dist/litenetlib_0952-*
+
+echo Done!
+echo TestPyPI URL: https://test.pypi.org/project/litenetlib-0952/
