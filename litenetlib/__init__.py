@@ -37,7 +37,7 @@ from .utils.data_writer import NetDataWriter
 from .utils.fast_bit_converter import FastBitConverter
 from .utils.net_utils import NetUtils
 
-__version__ = "1.0.0"
+__version__ = "1.0.1"
 __protocol_version__ = "0.9.5.2"
 
 __all__ = [
