@@ -251,22 +251,36 @@ class NetDataReader:
 
     # Bytes and arrays
 
-    def get_bytes(self, count: int) -> bytes:
+    def get_bytes(self, count: Optional[int] = None, destination: Optional[bytearray] = None, start: Optional[int] = None) -> Union[bytes, None]:
         """
-        Read specified number of bytes.
+        Read specified number of bytes, or read into destination array.
 
         Args:
-            count: Number of bytes to read
+            count: Number of bytes to read (if destination is None)
+            destination: Destination byte array (if provided)
+            start: Start position in destination
 
         Returns:
-            Bytes read
+            Bytes read (if destination is None), None otherwise
         """
-        if self.available_bytes < count:
-            raise EOFError(f"Not enough bytes (need {count}, have {self.available_bytes})")
-
-        data = bytes(self._data[self._position:self._position + count])
-        self._position += count
-        return data
+        if destination is not None:
+            # Read into destination array
+            if start is None:
+                start = 0
+            bytes_to_read = count if count is not None else len(destination) - start
+            if self.available_bytes < bytes_to_read:
+                raise EOFError(f"Not enough bytes (need {bytes_to_read}, have {self.available_bytes})")
+            destination[start:start + bytes_to_read] = self._data[self._position:self._position + bytes_to_read]
+            self._position += bytes_to_read
+            return None
+        else:
+            # Read and return bytes
+            bytes_to_read = count if count is not None else self.available_bytes
+            if self.available_bytes < bytes_to_read:
+                raise EOFError(f"Not enough bytes (need {bytes_to_read}, have {self.available_bytes})")
+            data = bytes(self._data[self._position:self._position + bytes_to_read])
+            self._position += bytes_to_read
+            return data
 
     def get_bytes_with_length(self) -> bytes:
         """Read bytes with ushort length prefix."""
@@ -386,6 +400,57 @@ class NetDataReader:
             raise EOFError("Not enough bytes to peek ushort")
         return struct.unpack_from('<H', self._data, self._position)[0]
 
+    def peek_sbyte(self) -> int:
+        """Peek at next sbyte without advancing."""
+        b = self.peek_byte()
+        return b if b < 128 else b - 256
+
+    def peek_char(self) -> str:
+        """Peek at next char without advancing."""
+        return chr(self.peek_ushort())
+
+    def peek_short(self) -> int:
+        """Peek at next short without advancing."""
+        if self.available_bytes < 2:
+            raise EOFError("Not enough bytes to peek short")
+        return struct.unpack_from('<h', self._data, self._position)[0]
+
+    def peek_long(self) -> int:
+        """Peek at next long without advancing."""
+        if self.available_bytes < 8:
+            raise EOFError("Not enough bytes to peek long")
+        return struct.unpack_from('<q', self._data, self._position)[0]
+
+    def peek_ulong(self) -> int:
+        """Peek at next ulong without advancing."""
+        if self.available_bytes < 8:
+            raise EOFError("Not enough bytes to peek ulong")
+        return struct.unpack_from('<Q', self._data, self._position)[0]
+
+    def peek_int(self) -> int:
+        """Peek at next int without advancing."""
+        if self.available_bytes < 4:
+            raise EOFError("Not enough bytes to peek int")
+        return struct.unpack_from('<i', self._data, self._position)[0]
+
+    def peek_uint(self) -> int:
+        """Peek at next uint without advancing."""
+        if self.available_bytes < 4:
+            raise EOFError("Not enough bytes to peek uint")
+        return struct.unpack_from('<I', self._data, self._position)[0]
+
+    def peek_float(self) -> float:
+        """Peek at next float without advancing."""
+        if self.available_bytes < 4:
+            raise EOFError("Not enough bytes to peek float")
+        return struct.unpack_from('<f', self._data, self._position)[0]
+
+    def peek_double(self) -> float:
+        """Peek at next double without advancing."""
+        if self.available_bytes < 8:
+            raise EOFError("Not enough bytes to peek double")
+        return struct.unpack_from('<d', self._data, self._position)[0]
+
     def peek_string(self, max_length: int = 0) -> str:
         """
         Peek at next string without advancing position.
@@ -439,6 +504,129 @@ class NetDataReader:
             if self.available_bytes >= 2 + size - 1:
                 return True, self.get_string()
         return False, default
+
+    def try_get_sbyte(self, default: int = 0) -> Tuple[bool, int]:
+        """Try to read an sbyte, return (success, value)."""
+        if self.available_bytes >= 1:
+            return True, self.get_sbyte()
+        return False, default
+
+    def try_get_short(self, default: int = 0) -> Tuple[bool, int]:
+        """Try to read a short, return (success, value)."""
+        if self.available_bytes >= 2:
+            return True, self.get_short()
+        return False, default
+
+    def try_get_ushort(self, default: int = 0) -> Tuple[bool, int]:
+        """Try to read a ushort, return (success, value)."""
+        if self.available_bytes >= 2:
+            return True, self.get_ushort()
+        return False, default
+
+    def try_get_uint(self, default: int = 0) -> Tuple[bool, int]:
+        """Try to read a uint, return (success, value)."""
+        if self.available_bytes >= 4:
+            return True, self.get_uint()
+        return False, default
+
+    def try_get_long(self, default: int = 0) -> Tuple[bool, int]:
+        """Try to read a long, return (success, value)."""
+        if self.available_bytes >= 8:
+            return True, self.get_long()
+        return False, default
+
+    def try_get_ulong(self, default: int = 0) -> Tuple[bool, int]:
+        """Try to read a ulong, return (success, value)."""
+        if self.available_bytes >= 8:
+            return True, self.get_ulong()
+        return False, default
+
+    def try_get_float(self, default: float = 0.0) -> Tuple[bool, float]:
+        """Try to read a float, return (success, value)."""
+        if self.available_bytes >= 4:
+            return True, self.get_float()
+        return False, default
+
+    def try_get_double(self, default: float = 0.0) -> Tuple[bool, float]:
+        """Try to read a double, return (success, value)."""
+        if self.available_bytes >= 8:
+            return True, self.get_double()
+        return False, default
+
+    def try_get_bytes_with_length(self, default: Optional[bytes] = None) -> Tuple[bool, Optional[bytes]]:
+        """Try to read bytes with length prefix, return (success, value)."""
+        if self.available_bytes >= 2:
+            length = struct.unpack_from('<H', self._data, self._position)[0]
+            if self.available_bytes >= 2 + length:
+                return True, self.get_bytes_with_length()
+        return False, default
+
+    # Array methods
+
+    def get_bool_array(self) -> List[bool]:
+        """Read an array of bools."""
+        length = self.get_ushort()
+        return [self.get_bool() for _ in range(length)]
+
+    def get_short_array(self) -> List[int]:
+        """Read an array of shorts."""
+        length = self.get_ushort()
+        return [self.get_short() for _ in range(length)]
+
+    def get_ushort_array(self) -> List[int]:
+        """Read an array of ushorts."""
+        length = self.get_ushort()
+        return [self.get_ushort() for _ in range(length)]
+
+    def get_int_array(self) -> List[int]:
+        """Read an array of ints."""
+        length = self.get_ushort()
+        return [self.get_int() for _ in range(length)]
+
+    def get_uint_array(self) -> List[int]:
+        """Read an array of uints."""
+        length = self.get_ushort()
+        return [self.get_uint() for _ in range(length)]
+
+    def get_long_array(self) -> List[int]:
+        """Read an array of longs."""
+        length = self.get_ushort()
+        return [self.get_long() for _ in range(length)]
+
+    def get_ulong_array(self) -> List[int]:
+        """Read an array of ulongs."""
+        length = self.get_ushort()
+        return [self.get_ulong() for _ in range(length)]
+
+    def get_float_array(self) -> List[float]:
+        """Read an array of floats."""
+        length = self.get_ushort()
+        return [self.get_float() for _ in range(length)]
+
+    def get_double_array(self) -> List[float]:
+        """Read an array of doubles."""
+        length = self.get_ushort()
+        return [self.get_double() for _ in range(length)]
+
+    # Special methods
+
+    def get_sbytes_with_length(self) -> bytes:
+        """Read sbytes with length prefix."""
+        return self.get_bytes_with_length()
+
+    def get_remaining_bytes_segment(self) -> bytes:
+        """Read all remaining bytes (alias for get_remaining_bytes)."""
+        return self.get_remaining_bytes()
+
+    @property
+    def raw_data(self) -> memoryview:
+        """Get raw underlying data."""
+        return self._data
+
+    @property
+    def raw_data_size(self) -> int:
+        """Get raw data size."""
+        return self._data_size
 
     def __len__(self) -> int:
         return self.available_bytes

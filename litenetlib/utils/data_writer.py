@@ -52,6 +52,21 @@ class NetDataWriter:
         return writer
 
     @classmethod
+    def from_bytes_with_offset(cls, data: bytes, offset: int, length: int) -> 'NetDataWriter':
+        """
+        Create NetDataWriter from existing bytes with offset.
+
+        Args:
+            data: Source bytes
+            offset: Starting offset in data
+            length: Number of bytes to copy
+        """
+        writer = cls(auto_resize=True, initial_size=length)
+        writer._data = bytearray(data[offset:offset + length])
+        writer._position = length
+        return writer
+
+    @classmethod
     def from_string(cls, value: str) -> 'NetDataWriter':
         """Create NetDataWriter from a string."""
         writer = cls()
@@ -116,6 +131,25 @@ class NetDataWriter:
         """Resize buffer if needed for additional data."""
         if self._auto_resize:
             self._ensure_capacity(self._position + additional_size)
+
+    def resize_if_need(self, size: int) -> None:
+        """
+        Resize buffer if needed.
+
+        Args:
+            size: Required minimum size
+        """
+        if self._auto_resize:
+            self._ensure_capacity(size)
+
+    def ensure_fit(self, additional_size: int) -> None:
+        """
+        Ensure buffer has capacity for additional data.
+
+        Args:
+            additional_size: Additional size needed
+        """
+        self._resize_if_needed(additional_size)
 
     # Basic types
 
@@ -302,6 +336,84 @@ class NetDataWriter:
                         self.put_double(item)
                     else:
                         self.put_long(item)
+
+    def put_sbytes_with_length(self, data: bytes) -> None:
+        """Write sbytes with length prefix."""
+        self.put_bytes_with_length(data)
+
+    # Array type-specific methods
+
+    def put_bool_array(self, arr: Optional[List[bool]]) -> None:
+        """Write an array of bools."""
+        length = len(arr) if arr is not None else 0
+        self.put_ushort(length)
+        if arr:
+            for item in arr:
+                self.put_bool(item)
+
+    def put_short_array(self, arr: Optional[List[int]]) -> None:
+        """Write an array of shorts."""
+        length = len(arr) if arr is not None else 0
+        self.put_ushort(length)
+        if arr:
+            for item in arr:
+                self.put_short(item)
+
+    def put_ushort_array(self, arr: Optional[List[int]]) -> None:
+        """Write an array of ushorts."""
+        length = len(arr) if arr is not None else 0
+        self.put_ushort(length)
+        if arr:
+            for item in arr:
+                self.put_ushort(item)
+
+    def put_int_array(self, arr: Optional[List[int]]) -> None:
+        """Write an array of ints."""
+        length = len(arr) if arr is not None else 0
+        self.put_ushort(length)
+        if arr:
+            for item in arr:
+                self.put_int(item)
+
+    def put_uint_array(self, arr: Optional[List[int]]) -> None:
+        """Write an array of uints."""
+        length = len(arr) if arr is not None else 0
+        self.put_ushort(length)
+        if arr:
+            for item in arr:
+                self.put_uint(item)
+
+    def put_long_array(self, arr: Optional[List[int]]) -> None:
+        """Write an array of longs."""
+        length = len(arr) if arr is not None else 0
+        self.put_ushort(length)
+        if arr:
+            for item in arr:
+                self.put_long(item)
+
+    def put_ulong_array(self, arr: Optional[List[int]]) -> None:
+        """Write an array of ulongs."""
+        length = len(arr) if arr is not None else 0
+        self.put_ushort(length)
+        if arr:
+            for item in arr:
+                self.put_ulong(item)
+
+    def put_float_array(self, arr: Optional[List[float]]) -> None:
+        """Write an array of floats."""
+        length = len(arr) if arr is not None else 0
+        self.put_ushort(length)
+        if arr:
+            for item in arr:
+                self.put_float(item)
+
+    def put_double_array(self, arr: Optional[List[float]]) -> None:
+        """Write an array of doubles."""
+        length = len(arr) if arr is not None else 0
+        self.put_ushort(length)
+        if arr:
+            for item in arr:
+                self.put_double(item)
 
     def put_string_array(self, arr: Optional[List[str]], max_length: int = 0) -> None:
         """

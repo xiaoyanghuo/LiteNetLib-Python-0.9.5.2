@@ -235,6 +235,17 @@ class ConnectionRequest:
         """
         self.reject(reject_data.data, 0, reject_data.length, force)
 
+    def reject_force_with_writer(self, reject_data: NetDataWriter) -> None:
+        """
+        Force reject connection with NetDataWriter.
+
+        Args:
+            reject_data: Data writer with rejection information
+
+        C# Equivalent: RejectForce(NetDataWriter)
+        """
+        self.reject_with_writer(reject_data, force=True)
+
     def __repr__(self) -> str:
         return (f"ConnectionRequest(remote={self._remote_address}, "
                 f"time={self.connection_time}, peer_id={self.peer_id})")

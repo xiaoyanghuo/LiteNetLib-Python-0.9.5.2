@@ -22,6 +22,7 @@ Version differences / 版本差异:
 from .core.manager import LiteNetManager
 from .core.peer import NetPeer, ConnectionState
 from .core.events import EventBasedNetListener, INetEventListener
+from .core.statistics import NetStatistics
 from .core.constants import (
     PacketProperty,
     DeliveryMethod,
@@ -46,6 +47,7 @@ __all__ = [
     "ConnectionState",
     "EventBasedNetListener",
     "INetEventListener",
+    "NetStatistics",
 
     # Constants / 常量
     "PacketProperty",

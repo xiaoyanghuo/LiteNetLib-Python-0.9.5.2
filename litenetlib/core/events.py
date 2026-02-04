@@ -212,6 +212,42 @@ class EventBasedNetListener(INetEventListener):
 
     # Clear callbacks
 
+    def clear_peer_connected_event(self) -> None:
+        """Clear peer connected callback."""
+        self._peer_connected_callback = None
+
+    def clear_peer_disconnected_event(self) -> None:
+        """Clear peer disconnected callback."""
+        self._peer_disconnected_callback = None
+
+    def clear_network_error_event(self) -> None:
+        """Clear network error callback."""
+        self._network_error_callback = None
+
+    def clear_network_receive_event(self) -> None:
+        """Clear network receive callback."""
+        self._network_receive_callback = None
+
+    def clear_network_receive_unconnected_event(self) -> None:
+        """Clear network receive unconnected callback."""
+        self._network_receive_unconnected_callback = None
+
+    def clear_network_latency_update_event(self) -> None:
+        """Clear network latency update callback."""
+        self._network_latency_update_callback = None
+
+    def clear_connection_request_event(self) -> None:
+        """Clear connection request callback."""
+        self._connection_request_callback = None
+
+    def clear_delivery_event(self) -> None:
+        """Clear message delivered callback."""
+        self._message_delivered_callback = None
+
+    def clear_peer_address_changed_event(self) -> None:
+        """Clear peer address changed callback."""
+        self._peer_address_changed_callback = None
+
     def clear_all_callbacks(self) -> None:
         """Clear all registered callbacks."""
         self._peer_connected_callback = None
