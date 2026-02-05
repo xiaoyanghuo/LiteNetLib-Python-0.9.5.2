@@ -1,0 +1,186 @@
+================================================================================
+C# vs Python API 1对1对应关系检查
+================================================================================
+
+================================================================================
+1. NetPacket.cs
+================================================================================
+
+属性检查:
+  [OK] Property             -> packet_property
+  [OK] ConnectionNumber     -> connection_number
+  [OK] Sequence             -> sequence
+  [OK] IsFragmented         -> is_fragmented
+  [OK] ChannelId            -> channel_id
+  [OK] FragmentId           -> fragment_id
+  [OK] FragmentPart         -> fragment_part
+  [OK] FragmentsTotal       -> fragments_total
+  [OK] RawData              -> raw_data
+  [OK] Size                 -> size
+  [OK] GetHeaderSize        -> get_header_size
+  [OK] Verify               -> verify
+  [OK] MarkFragmented       -> mark_fragmented
+
+方法检查:
+  [OK] Property             -> packet_property
+  [OK] ConnectionNumber     -> connection_number
+  [OK] Sequence             -> sequence
+  [OK] IsFragmented         -> is_fragmented
+  [OK] ChannelId            -> channel_id
+  [OK] FragmentId           -> fragment_id
+  [OK] FragmentPart         -> fragment_part
+  [OK] FragmentsTotal       -> fragments_total
+  [OK] RawData              -> raw_data
+  [OK] Size                 -> size
+  [OK] GetHeaderSize        -> get_header_size
+  [OK] Verify               -> verify
+  [OK] MarkFragmented       -> mark_fragmented
+
+================================================================================
+2. NetDataReader.cs
+================================================================================
+
+方法检查:
+  [OK] GetByte                   -> get_byte
+  [OK] GetSByte                  -> get_sbyte
+  [OK] GetBool                   -> get_bool
+  [OK] GetUShort                 -> get_ushort
+  [OK] GetShort                  -> get_short
+  [OK] GetChar                   -> get_char
+  [OK] GetUInt                   -> get_uint
+  [OK] GetInt                    -> get_int
+  [OK] GetULong                  -> get_ulong
+  [OK] GetLong                   -> get_long
+  [OK] GetFloat                  -> get_float
+  [OK] GetDouble                 -> get_double
+  [OK] GetString                 -> get_string
+  [OK] GetBytes                  -> get_bytes
+  [OK] GetRemainingBytes         -> get_remaining_bytes
+  [OK] GetBytesWithLength        -> get_bytes_with_length
+  [OK] GetNetEndPoint            -> get_net_endpoint
+  [OK] GetBoolArray              -> get_bool_array
+  [OK] GetShortArray             -> get_short_array
+  [OK] GetIntArray               -> get_int_array
+  [OK] GetLongArray              -> get_long_array
+  [OK] GetFloatArray             -> get_float_array
+  [OK] GetDoubleArray            -> get_double_array
+  [OK] GetStringArray            -> get_string_array
+
+NetDataReader: 24/24
+
+================================================================================
+3. NetDataWriter.cs
+================================================================================
+
+方法检查:
+  [OK] Put(bool)                      -> put_bool
+  [OK] Put(byte)                      -> put_byte
+  [OK] Put(sbyte)                     -> put_sbyte
+  [OK] Put(short)                     -> put_short
+  [OK] Put(ushort)                    -> put_ushort
+  [OK] Put(int)                       -> put_int
+  [OK] Put(uint)                      -> put_uint
+  [OK] Put(long)                      -> put_long
+  [OK] Put(ulong)                     -> put_ulong
+  [OK] Put(float)                     -> put_float
+  [OK] Put(double)                    -> put_double
+  [OK] Put(string)                    -> put_string
+  [OK] Put(byte[])                    -> put_bytes
+  [OK] PutArray(bool[])               -> put_bool_array
+  [OK] PutArray(short[])              -> put_short_array
+  [OK] PutArray(int[])                -> put_int_array
+  [OK] PutArray(long[])               -> put_long_array
+  [OK] PutArray(float[])              -> put_float_array
+  [OK] PutArray(double[])             -> put_double_array
+  [OK] PutArray(string[])             -> put_string_array
+  [OK] Put(IPEndPoint)                -> put_endpoint
+
+NetDataWriter: 21/21
+
+================================================================================
+4. PacketProperty 枚举
+================================================================================
+
+枚举值检查:
+  [OK] Unreliable                = 0
+  [OK] Channeled                 = 1
+  [OK] Ack                       = 2
+  [OK] Ping                      = 3
+  [OK] Pong                      = 4
+  [OK] ConnectRequest            = 5
+  [OK] ConnectAccept             = 6
+  [OK] Disconnect                = 7
+  [OK] UnconnectedMessage        = 8
+  [OK] MtuCheck                  = 9
+  [OK] MtuOk                     = 10
+  [OK] Broadcast                 = 11
+  [OK] Merged                    = 12
+  [OK] ShutdownOk                = 13
+  [OK] PeerNotFound              = 14
+  [OK] InvalidProtocol           = 15
+  [OK] NatMessage                = 16
+  [OK] Empty                     = 17
+
+PacketProperty: 全部正确
+
+================================================================================
+5. DeliveryMethod 枚举
+================================================================================
+
+枚举值检查:
+  [OK] Unreliable                = 4
+  [OK] Sequenced                 = 1
+  [OK] ReliableUnordered         = 0
+  [OK] ReliableSequenced         = 3
+  [OK] ReliableOrdered           = 2
+
+DeliveryMethod: 全部正确
+
+================================================================================
+6. 内部包 (InternalPackets.cs)
+================================================================================
+
+NetConnectRequestPacket:
+  [OK] HEADER_SIZE = 14 (C#: 14)
+  [OK] get_protocol_id()
+  [OK] from_data()
+  [OK] make()
+
+NetConnectAcceptPacket:
+  [OK] SIZE = 11 (C#: 11)
+  [OK] from_data()
+  [OK] make()
+
+================================================================================
+7. 通道类 (BaseChannel, ReliableChannel, SequencedChannel)
+================================================================================
+
+BaseChannel 抽象方法:
+  [OK] Send                 -> send (抽象方法，在子类实现)
+  [OK] Receive              -> receive (抽象方法，在子类实现)
+  [OK] ProcessAck           -> processack (抽象方法，在子类实现)
+
+ReliableChannel:
+  [OK] BITS_IN_BYTE         = 8
+
+================================================================================
+8. CRC32C (Utils/CRC32C.cs)
+================================================================================
+  [OK] CHECKSUM_SIZE = 4
+  [OK] compute() - 静态方法
+
+================================================================================
+9. FastBitConverter (Utils/FastBitConverter.cs)
+================================================================================
+
+静态方法检查:
+
+================================================================================
+10. NetConstants (NetConstants.cs)
+================================================================================
+
+常量检查:
+
+================================================================================
+检查完成
+================================================================================

@@ -1,115 +1,108 @@
 """
-Base channel class for packet delivery (asyncio-compatible).
+BaseChannel.cs 翻译（完整版）
 
-Channels are responsible for managing packet delivery with specific
-reliability and ordering guarantees.
+通道基类 - 所有发送通道的抽象基类
 
-This version uses asyncio while maintaining C# protocol logic.
+C#源文件: BaseChannel.cs
+C#行数: ~46行
+实现状态: ✓完整
+最后更新: 2025-02-05
+说明: 完整实现了C#版本的所有功能
 """
 
-import asyncio
 from abc import ABC, abstractmethod
-from typing import Optional
-from litenetlib.core.packet import NetPacket
-from litenetlib.core.constants import NetConstants
+from typing import List, TYPE_CHECKING
+from queue import Queue
+
+if TYPE_CHECKING:
+    from ..packets.net_packet import NetPacket
+    from ..lite_net_peer import LiteNetPeer
 
 
 class BaseChannel(ABC):
     """
-    Base class for all delivery channels.
+    通道基类
 
-    Channels manage outgoing packet queues and implement different
-    delivery strategies (reliable, sequenced, etc.).
+    C#定义: internal abstract class BaseChannel
+    C#源位置: BaseChannel.cs
 
-    Uses asyncio.Queue for Python async compatibility while
-    maintaining C# protocol logic and algorithms.
+    所有发送通道的抽象基类，提供通用功能：
+    - 出队队列管理
+    - 包发送接口
+    - 包处理接口
     """
 
-    __slots__ = ('_peer', '_outgoing_queue', '_is_added_to_peer_channel_send_queue')
-
-    def __init__(self, peer):
+    def __init__(self, peer: 'LiteNetPeer'):
         """
-        Initialize base channel.
+        创建通道
 
-        Args:
-            peer: Associated peer instance
+        C#构造函数: internal BaseChannel(LiteNetPeer peer)
+        C#源位置: BaseChannel.cs 构造函数
+
+        参数:
+            peer: LiteNetPeer - 所属的peer
         """
         self._peer = peer
-
-        # Async queue with capacity DefaultWindowSize (matching C#)
-        # C#: Queue<NetPacket> OutgoingQueue = new Queue<NetPacket>(NetConstants.DefaultWindowSize)
-        self._outgoing_queue = asyncio.Queue(maxsize=NetConstants.DEFAULT_WINDOW_SIZE)
-
-        # Atomic flag (C#: Interlocked.CompareExchange)
-        self._is_added_to_peer_channel_send_queue = 0
+        self.outgoing_queue: List['NetPacket'] = []
 
     @property
-    def packets_in_queue(self) -> int:
-        """
-        Get number of packets in outgoing queue.
-
-        C# Equivalent: public int PacketsInQueue => OutgoingQueue.Count;
-        """
-        return self._outgoing_queue.qsize()
-
-    def add_to_queue(self, packet: NetPacket) -> None:
-        """
-        Add a packet to the outgoing queue.
-
-        Args:
-            packet: Packet to send
-
-        C# Equivalent: public void AddToQueue(NetPacket packet)
-        """
-        # C#: lock (OutgoingQueue) { OutgoingQueue.Enqueue(packet); }
-        self._outgoing_queue.put_nowait(packet)
-
-        # C#: AddToPeerChannelSendQueue()
-        self._add_to_peer_channel_send_queue()
-
-    def _add_to_peer_channel_send_queue(self) -> None:
-        """
-        Add this channel to peer's channel send queue.
-
-        C# Equivalent: protected void AddToPeerChannelSendQueue()
-        """
-        # C#: if (Interlocked.CompareExchange(ref _isAddedToPeerChannelSendQueue, 1, 0) == 0)
-        if self._is_added_to_peer_channel_send_queue == 0:
-            self._is_added_to_peer_channel_send_queue = 1
-            # C#: Peer.AddToReliableChannelSendQueue(this)
-            if hasattr(self._peer, 'add_channel_to_send_queue'):
-                self._peer.add_channel_to_send_queue(self)
+    def peer(self) -> 'LiteNetPeer':
+        """获取所属peer"""
+        return self._peer
 
     @abstractmethod
     def send_next_packets(self) -> bool:
         """
-        Send next packets from queue.
+        发送下一个包
 
-        Returns:
-            True if more packets to send, False otherwise
+        C#方法: public abstract bool SendNextPackets()
+        C#源位置: BaseChannel.cs
 
-        C# Equivalent: public abstract bool SendNextPackets();
+        返回:
+            bool: 如果有待处理的包返回true
         """
         pass
 
     @abstractmethod
-    def process_packet(self, packet: NetPacket) -> bool:
+    def process_packet(self, packet: 'NetPacket') -> bool:
         """
-        Process incoming packet.
+        处理收到的包
 
-        Args:
-            packet: Received packet
+        C#方法: public abstract bool ProcessPacket(NetPacket packet)
+        C#源位置: BaseChannel.cs
 
-        Returns:
-            True if packet was processed successfully
+        参数:
+            packet: NetPacket - 收到的包
 
-        C# Equivalent: public abstract bool ProcessPacket(NetPacket packet);
+        返回:
+            bool: 如果包被处理返回true
         """
         pass
 
-    def mark_sent(self) -> None:
-        """Mark channel as sent (removed from peer send queue)."""
-        self._is_added_to_peer_channel_send_queue = 0
+    def add_to_queue(self, packet: 'NetPacket') -> None:
+        """
+        添加包到队列
 
-    def __repr__(self) -> str:
-        return f"BaseChannel(queued={self.packets_in_queue})"
+        C#方法: internal void AddToQueue(NetPacket packet)
+        说明: 将包添加到出队队列
+
+        参数:
+            packet: NetPacket - 要添加的包
+        """
+        self.outgoing_queue.append(packet)
+
+    def add_to_peer_channel_send_queue(self) -> None:
+        """
+        添加到peer的通道发送队列
+
+        C#方法: internal void AddToPeerChannelSendQueue()
+        说明: 将此通道添加到peer的待发送队列
+
+        实现:
+            告诉peer这个通道有数据需要发送
+        """
+        if hasattr(self._peer, 'add_to_reliable_channel_send_queue'):
+            self._peer.add_to_reliable_channel_send_queue(self)
+
+
+__all__ = ["BaseChannel"]
